@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using XCRM.Infrastructure.Data;
+using XCRM.Domain.Repositories;
+using XCRM.Infrastructure.Repositories;
+using XCRM.Infrastructure;
+using XCRM.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,16 +13,9 @@ builder.Services.AddControllers();
 // OpenAPI 文档
 builder.Services.AddOpenApi();
 
-// 注册 EF Core
-builder.Services.AddDbContext<XCrmDbContext>(options =>
-{
-    var connectionString =
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new InvalidOperationException(
-            "未找到连接字符串 DefaultConnection");
+builder.Services.AddApplication();
 
-    options.UseSqlServer(connectionString);
-});
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
