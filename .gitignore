@@ -1,0 +1,37 @@
+# Visual Studio / .NET
+.vs/
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# Frontend
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Test results
+**/TestResults/
+**/coverage/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local databases
+*.db
+*.db-shm
+*.db-wal
+
+# Debug files
+*.pdb
