@@ -7,6 +7,9 @@ namespace XCRM.Application
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddApplication(this iser)
+        public static IServiceCollection AddApplication(this IServiceCollection services)
+        {
+            return services;
+        }
     }
 }
