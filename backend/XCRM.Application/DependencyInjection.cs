@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using XCRM.Application.Users;
 
 namespace XCRM.Application
 {
@@ -9,6 +10,8 @@ namespace XCRM.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
+            services.AddScoped<IUserService, UserService>();
+
             return services;
         }
     }

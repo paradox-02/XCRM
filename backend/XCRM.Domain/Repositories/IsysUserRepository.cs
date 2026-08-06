@@ -14,5 +14,7 @@ namespace XCRM.Domain.Repositories
         Task AddAsync(SysUser user, CancellationToken cancellationToken = default);
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        Task<SysUser?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
     }
 }

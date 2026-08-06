@@ -13,6 +13,6 @@ namespace XCRM.Infrastructure.Data
 
         }
 
-        public DbSet<SysUser> Users { get; set; }
+        public DbSet<SysUser> Users => Set<SysUser>();
     }
 }
