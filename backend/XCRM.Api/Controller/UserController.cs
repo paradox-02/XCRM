@@ -25,5 +25,24 @@ namespace XCRM.Api.Controller
 
             return Ok(user);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<UserDto>> Create(CreateUserRequest request,CancellationToken cancellationToken)
+        {
+            var user = await _userService.CreateAsync(request, cancellationToken);
+
+            if (user is null)
+            {
+                return Conflict(new
+                {
+                    message = "用户名已经存在"
+                });
+            }
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = user.Id },
+                user);
+        }
     }
 }

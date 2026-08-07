@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using XCRM.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using XCRM.Infrastructure.Data;
 namespace XCRM.Infrastructure.Migrations
 {
     [DbContext(typeof(XCrmDbContext))]
-    partial class XCrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260807022625_AddUniqueUsernameIndex")]
+    partial class AddUniqueUsernameIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Text;
+using XCRM.Application.Common.Security;
 using XCRM.Domain.Repositories;
 using XCRM.Infrastructure.Data;
 using XCRM.Infrastructure.Repositories;
+using XCRM.Infrastructure.Security;
 
 namespace XCRM.Infrastructure
 {
@@ -23,7 +25,9 @@ namespace XCRM.Infrastructure
                 options.UseSqlServer(connectinString);
             });
 
-            services.AddScoped<IsysUserRepository, SysUserRepository>();
+            services.AddScoped<ISysUserRepository, SysUserRepository>();
+
+            services.AddSingleton<IPasswordHasher, AspNetCorePasswordHasher>();
 
             return services;
         }

@@ -8,7 +8,7 @@ using XCRM.Infrastructure.Data;
 
 namespace XCRM.Infrastructure.Repositories
 {
-    public sealed class SysUserRepository : IsysUserRepository
+    public sealed class SysUserRepository : ISysUserRepository
     {
         private readonly XCrmDbContext _dbContext;
 

@@ -8,5 +8,7 @@ namespace XCRM.Application.Users
     public interface IUserService
     {
         Task<UserDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+
+        Task<UserDto?> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default);
     }
 }
