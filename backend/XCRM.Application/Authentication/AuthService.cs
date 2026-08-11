@@ -11,11 +11,13 @@ namespace XCRM.Application.Authentication
     {
         private readonly ISysUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IAccessTokenGenerator _accessTokenGenerator;
 
-        public AuthService(ISysUserRepository userRepository, IPasswordHasher passwordHasher)
+        public AuthService(ISysUserRepository userRepository, IPasswordHasher passwordHasher, IAccessTokenGenerator accessTokenGenerator)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _accessTokenGenerator = accessTokenGenerator;
         }
 
         public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -36,7 +38,9 @@ namespace XCRM.Application.Authentication
                 return null;
             }
 
-            return new LoginResponse(user.Id, user.Username);
+            var accessToken = _accessTokenGenerator.Generate(user.Id, user.Username);
+
+            return new LoginResponse(user.Id, user.Username, accessToken.Value, accessToken.ExpiresAtUtc);
         }
     }
 }

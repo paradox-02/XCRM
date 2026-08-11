@@ -4,5 +4,5 @@ using System.Text;
 
 namespace XCRM.Application.Authentication.DTOs
 {
-    public sealed record LoginResponse(long UserId, string Username);
+    public sealed record LoginResponse(long UserId, string Username, string AccessToken, DateTime ExpiresAtUtc);
 }

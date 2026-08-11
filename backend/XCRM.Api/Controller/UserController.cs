@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using XCRM.Application.Users;
 using XCRM.Application.Users.DTOs;
 
@@ -15,6 +16,7 @@ namespace XCRM.Api.Controller
             _userService = userService;
         }
 
+        [Authorize]
         [HttpGet("{id:long}")]
         public async Task<ActionResult<UserDto>> GetById(long id, CancellationToken cancellationToken)
         {

@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using System.Text;
 using XCRM.Application.Common.Security;
 using XCRM.Domain.Repositories;
+using XCRM.Infrastructure.Authentication;
 using XCRM.Infrastructure.Data;
 using XCRM.Infrastructure.Repositories;
 using XCRM.Infrastructure.Security;
@@ -28,6 +29,10 @@ namespace XCRM.Infrastructure
             services.AddScoped<ISysUserRepository, SysUserRepository>();
 
             services.AddSingleton<IPasswordHasher, AspNetCorePasswordHasher>();
+
+            services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+
+            services.AddSingleton<IAccessTokenGenerator, JwtAccessTokenGenerator>();
 
             return services;
         }
