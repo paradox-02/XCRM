@@ -78,5 +78,26 @@ namespace XCRM.Api.Controller
 
             return Ok(user);
         }
+
+        [Authorize]
+        [HttpPut("me")]
+        public async Task<ActionResult<UserDto>> UpdateCurrentUser(
+            UpdateUserProfileRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (_currentUser.UserId is not long userId)
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userService.UpdateProfileAsync(userId, request, cancellationToken);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
     }
 }

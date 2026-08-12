@@ -66,5 +66,21 @@ namespace XCRM.Application.Users
                 user.IsActive,
                 user.CreateTime);
         }
+
+        public async Task<UserDto?> UpdateProfileAsync(long userId, UpdateUserProfileRequest request, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            user.UpdateProfile(request.Email, request.Phone);
+
+            await _userRepository.SaveChangesAsync(cancellationToken);
+
+            return ToDto(user);
+        }
     }
 }

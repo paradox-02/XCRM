@@ -10,5 +10,7 @@ namespace XCRM.Application.Users
         Task<UserDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
 
         Task<UserDto?> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default);
+
+        Task<UserDto?> UpdateProfileAsync(long userId, UpdateUserProfileRequest request, CancellationToken cancellationToken = default);
     }
 }
