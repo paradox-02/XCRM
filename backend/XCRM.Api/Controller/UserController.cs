@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using XCRM.Application.Users;
 using XCRM.Application.Users.DTOs;
 
@@ -45,6 +46,26 @@ namespace XCRM.Api.Controller
                 nameof(GetById),
                 new { id = user.Id },
                 user);
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public ActionResult GetCurrentUser()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var username = User.FindFirstValue(ClaimTypes.Name);
+
+            if (!long.TryParse(userIdValue, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            return Ok(new
+            {
+                userId,
+                username
+            });
         }
     }
 }
