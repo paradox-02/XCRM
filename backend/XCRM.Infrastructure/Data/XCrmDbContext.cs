@@ -13,6 +13,33 @@ namespace XCRM.Infrastructure.Data
 
         }
 
-        public DbSet<SysUser> Users { get; set; }
+        public DbSet<SysUser> Users => Set<SysUser>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<SysUser>(n =>
+            {
+                n.HasKey(x => x.Id);
+
+                n.Property(x => x.Username)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                n.HasIndex(x => x.Username)
+                    .IsUnique();
+
+                n.Property(x => x.PasswordHash)
+                    .HasMaxLength(500)
+                    .IsRequired();
+
+                n.Property(x => x.Email)
+                    .HasMaxLength(100);
+
+                n.Property(x => x.Phone)
+                    .HasMaxLength(20);
+            });
+        }
     }
 }

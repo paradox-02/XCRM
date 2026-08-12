@@ -1,6 +1,62 @@
-@XCRM.Api_HostAddress = http://localhost:5299
+# @XCRM.Api_HostAddress = http://localhost:5299
 
-GET {{XCRM.Api_HostAddress}}/weatherforecast/
+@host = https://localhost:7059
+
+### 创建用户
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "12345678"
+}
+
+### 再次创建同名用户，应返回409
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "87654321"
+}
+
+### 密码长度不足，应返回400
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "123"
+}
+
+### 查询用户
+GET {{host}}/api/users/1
 Accept: application/json
-
 ###
+
+### 正确密码登录
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "12345678"
+}
+
+### 错误密码登录
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "wrong-password"
+}
+
+### 不存在的用户
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "not-exists",
+  "password": "12345678"
+}

@@ -83,5 +83,14 @@ namespace XCRM.Domain.Entities
             IsActive = true;
             UpdateTime = DateTime.UtcNow;
         }
+
+        public void UpdateProfile(string? email, string? phone)
+        {
+            Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
+
+            Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
+
+            UpdateTime = DateTime.UtcNow;
+        }
     }
 }

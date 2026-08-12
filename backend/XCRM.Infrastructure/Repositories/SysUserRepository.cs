@@ -8,7 +8,7 @@ using XCRM.Infrastructure.Data;
 
 namespace XCRM.Infrastructure.Repositories
 {
-    public sealed class SysUserRepository :IsysUserRepository
+    public sealed class SysUserRepository : ISysUserRepository
     {
         private readonly XCrmDbContext _dbContext;
 
@@ -19,22 +19,26 @@ namespace XCRM.Infrastructure.Repositories
 
         public Task<SysUser?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
         {
-            return _dbContext.Set<SysUser>().SingleOrDefaultAsync(user => user.Username == username, cancellationToken);
+            return _dbContext.Users.SingleOrDefaultAsync(user => user.Username == username, cancellationToken);
         }
 
         public Task<bool> ExistsByUsernameAsync(string username, CancellationToken cancellationToken = default)
         {
-            return _dbContext.Set<SysUser>().AnyAsync(user => user.Username == username, cancellationToken);
+            return _dbContext.Users.AnyAsync(user => user.Username == username, cancellationToken);
         }
 
         public async Task AddAsync(SysUser user, CancellationToken cancellationToken = default)
         {
-            await _dbContext.Set<SysUser>().AddAsync(user, cancellationToken);
+            await _dbContext.Users.AddAsync(user, cancellationToken);
         }
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        public async Task<SysUser?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(n => n.Id == id, cancellationToken);
         }
     }
 }

@@ -5,7 +5,7 @@ using XCRM.Domain.Entities;
 
 namespace XCRM.Domain.Repositories
 {
-    public interface IsysUserRepository
+    public interface ISysUserRepository
     {
         Task<SysUser?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default);
 
@@ -14,5 +14,7 @@ namespace XCRM.Domain.Repositories
         Task AddAsync(SysUser user, CancellationToken cancellationToken = default);
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        Task<SysUser?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
     }
 }

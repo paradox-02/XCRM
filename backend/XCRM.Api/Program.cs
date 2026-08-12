@@ -4,27 +4,77 @@ using XCRM.Domain.Repositories;
 using XCRM.Infrastructure.Repositories;
 using XCRM.Infrastructure;
 using XCRM.Application;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
+using XCRM.Api;
+using XCRM.Application.Common.Identity;
+using XCRM.Api.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 注册 Controller API
 builder.Services.AddControllers();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
 // OpenAPI 文档
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(n =>
+{
+    n.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
 
 builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+
+// Jwt
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+    ?? throw new InvalidOperationException(
+        "未配置Jwt:Issuer");
+
+var jwtAudience = builder.Configuration["Jwt:Audience"]
+    ?? throw new InvalidOperationException(
+        "未配置Jwt:Audience");
+
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException(
+        "未配置Jwt:Key");
+
+builder.Services.AddAuthentication(
+    JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtKey)),
+
+            ValidateLifetime = true,
+
+            ClockSkew = TimeSpan.FromSeconds(30)
+        };
+    });
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
