@@ -23,6 +23,16 @@ namespace XCRM.Api.Controller
         [HttpGet("{id:long}")]
         public async Task<ActionResult<UserDto>> GetById(long id, CancellationToken cancellationToken)
         {
+            if (_currentUser.UserId is not long currentUserId)
+            {
+                return Unauthorized();
+            }
+
+            if (currentUserId != id)
+            {
+                return Forbid();
+            }
+
             var user = await _userService.GetByIdAsync(id, cancellationToken);
 
             if (user is null)
