@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using XCRM.Application.Common.Identity;
 using XCRM.Application.Users;
 using XCRM.Application.Users.DTOs;
 
@@ -11,10 +11,12 @@ namespace XCRM.Api.Controller
     public sealed class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ICurrentUser _currentUser;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, ICurrentUser currentUser)
         {
             _userService = userService;
+            _currentUser = currentUser;
         }
 
         [Authorize]
@@ -30,7 +32,7 @@ namespace XCRM.Api.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDto>> Create(CreateUserRequest request,CancellationToken cancellationToken)
+        public async Task<ActionResult<UserDto>> Create(CreateUserRequest request, CancellationToken cancellationToken)
         {
             var user = await _userService.CreateAsync(request, cancellationToken);
 
@@ -50,22 +52,21 @@ namespace XCRM.Api.Controller
 
         [Authorize]
         [HttpGet("me")]
-        public ActionResult GetCurrentUser()
+        public async Task<ActionResult> GetCurrentUser(CancellationToken cancellationToken)
         {
-            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var username = User.FindFirstValue(ClaimTypes.Name);
-
-            if (!long.TryParse(userIdValue, out var userId))
+            if (_currentUser.UserId is not long userId)
             {
                 return Unauthorized();
             }
 
-            return Ok(new
+            var user = await _userService.GetByIdAsync(userId, cancellationToken);
+
+            if (user is null)
             {
-                userId,
-                username
-            });
+                return NotFound();
+            }
+
+            return Ok(user);
         }
     }
 }

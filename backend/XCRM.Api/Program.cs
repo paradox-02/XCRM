@@ -8,11 +8,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using XCRM.Api;
+using XCRM.Application.Common.Identity;
+using XCRM.Api.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 注册 Controller API
 builder.Services.AddControllers();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 // OpenAPI 文档
 builder.Services.AddOpenApi(n =>
