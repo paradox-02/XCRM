@@ -10,11 +10,17 @@ using Scalar.AspNetCore;
 using XCRM.Api;
 using XCRM.Application.Common.Identity;
 using XCRM.Api.Identity;
+using XCRM.Api.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 注册 Controller API
 builder.Services.AddControllers();
+
+builder.Services.AddProblemDetails();
+
+builder.Services.AddExceptionHandler<ConflictExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
@@ -65,6 +71,8 @@ builder.Services.AddAuthentication(
     });
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

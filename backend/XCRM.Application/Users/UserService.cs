@@ -6,6 +6,7 @@ using XCRM.Application.Common.Security;
 using XCRM.Application.Users.DTOs;
 using XCRM.Domain.Entities;
 using XCRM.Domain.Repositories;
+using XCRM.Application.Common.Exceptions;
 
 namespace XCRM.Application.Users
 {
@@ -13,8 +14,8 @@ namespace XCRM.Application.Users
     {
         private readonly ISysUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
-        
-        public UserService(ISysUserRepository userRepository,IPasswordHasher passwordHasher)
+
+        public UserService(ISysUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
@@ -36,14 +37,16 @@ namespace XCRM.Application.Users
                 user.CreateTime);
         }
 
-        public async Task<UserDto?> CreateAsync(CreateUserRequest request,CancellationToken cancellationToken = default)
+        public async Task<UserDto> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default)
         {
             var username = request.Username.Trim();
 
             var exists = await _userRepository.ExistsByUsernameAsync(username, cancellationToken);
 
             if (exists)
-                return null;
+            {
+                throw new ConflictException("用户名已经存在");
+            }
 
             var passwordHash = _passwordHasher.Hash(request.Password);
 
