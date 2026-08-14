@@ -46,13 +46,6 @@ namespace XCRM.Api.Controller
         {
             var user = await _userService.CreateAsync(request, cancellationToken);
 
-            if (user is null)
-            {
-                return Conflict(new
-                {
-                    message = "用户名已经存在"
-                });
-            }
 
             return CreatedAtAction(
                 nameof(GetById),
