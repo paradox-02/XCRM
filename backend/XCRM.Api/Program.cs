@@ -76,11 +76,6 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-
-    app.MapGet("/test-error", () =>
-    {
-        throw new InvalidOperationException("测试全局异常处理");
-    });
 }
 
 app.UseHttpsRedirection();
