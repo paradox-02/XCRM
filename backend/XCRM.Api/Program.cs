@@ -24,7 +24,14 @@ builder.Services.AddSerilog((_, LoggerConfiguration) =>
         .MinimumLevel.Override(
         "Microsoft.EntityFrameworkCore.Database.Command",
         Serilog.Events.LogEventLevel.Warning)
-        .WriteTo.Console();
+        .WriteTo.Console()
+        .WriteTo.File(
+        Path.Combine(
+            builder.Environment.ContentRootPath,
+            "logs",
+            "XCRM-.log"),
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 7);
 });
 
 // 注册 Controller API
