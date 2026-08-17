@@ -11,8 +11,28 @@ using XCRM.Api;
 using XCRM.Application.Common.Identity;
 using XCRM.Api.Identity;
 using XCRM.Api.ExceptionHandling;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSerilog((_, LoggerConfiguration) =>
+{
+    LoggerConfiguration
+        .MinimumLevel.Override(
+        "Microsoft.AspNetCore",
+        Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override(
+        "Microsoft.EntityFrameworkCore.Database.Command",
+        Serilog.Events.LogEventLevel.Warning)
+        .WriteTo.Console()
+        .WriteTo.File(
+        Path.Combine(
+            builder.Environment.ContentRootPath,
+            "logs",
+            "XCRM-.log"),
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 7);
+});
 
 // 注册 Controller API
 builder.Services.AddControllers();
@@ -71,6 +91,16 @@ builder.Services.AddAuthentication(
     });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.000} ms TraceId:{TraceId}";
+
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("TraceId", httpContext.TraceIdentifier);
+    };
+});
 
 app.UseExceptionHandler();
 
