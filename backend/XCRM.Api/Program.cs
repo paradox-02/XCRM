@@ -11,8 +11,21 @@ using XCRM.Api;
 using XCRM.Application.Common.Identity;
 using XCRM.Api.Identity;
 using XCRM.Api.ExceptionHandling;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSerilog((_, LoggerConfiguration) =>
+{
+    LoggerConfiguration
+        .MinimumLevel.Override(
+        "Microsoft.AspNetCore",
+        Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override(
+        "Microsoft.EntityFrameworkCore.Database.Command",
+        Serilog.Events.LogEventLevel.Warning)
+        .WriteTo.Console();
+});
 
 // 注册 Controller API
 builder.Services.AddControllers();
@@ -71,6 +84,8 @@ builder.Services.AddAuthentication(
     });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler();
 
