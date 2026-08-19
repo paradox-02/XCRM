@@ -2,6 +2,7 @@
   <Folder Name="/XCRM.api/">
     <Project Path="XCRM.api/XCRM.Api.csproj" />
   </Folder>
+  <Project Path="XCRM.Application.Tests/XCRM.Application.Tests.csproj" />
   <Project Path="XCRM.Application/XCRM.Application.csproj" />
   <Project Path="XCRM.Domain/XCRM.Domain.csproj" />
   <Project Path="XCRM.Infrastructure/XCRM.Infrastructure.csproj" />
