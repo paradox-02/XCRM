@@ -150,5 +150,46 @@ namespace XCRM.Application.Tests
                 existingUser.Username),
                 Times.Once);
         }
+
+        [Fact]
+        public async Task LoginAsync_WhenUserIsInactive_ReturnsNull()
+        {
+            var user = new Mock<ISysUserRepository>();
+            var password = new Mock<IPasswordHasher>();
+            var access = new Mock<IAccessTokenGenerator>();
+
+            var inactiveUser = new SysUser("alice", "admin123123");
+            inactiveUser.Disable();
+
+            user.Setup(n => n.GetByUsernameAsync(
+                "alice",
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(inactiveUser);
+
+            var service = new AuthService(
+                user.Object,
+                password.Object,
+                access.Object);
+
+            var request = new LoginRequest
+            {
+                Username = "alice",
+                Password = "admin123123"
+            };
+
+            var result = await service.LoginAsync(request);
+
+            Assert.Null(result);
+
+            password.Verify(n => n.Verify(
+                It.IsAny<string>(),
+                It.IsAny<string>()),
+                Times.Never);
+
+            access.Verify(n => n.Generate(
+                It.IsAny<long>(),
+                It.IsAny<string>()),
+                Times.Never);
+        }
     }
 }
