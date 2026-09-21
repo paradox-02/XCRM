@@ -39,5 +39,17 @@ namespace XCRM.Domain.Entities
             IsActive = true;
             UpdateTime = DateTime.UtcNow;
         }
+
+        public void UpdateDetails(string? address, string? remark)
+        {
+            Address = NormalizeOptional(address);
+            Remark = NormalizeOptional(remark);
+            UpdateTime = DateTime.UtcNow;
+        }
+
+        private static string? NormalizeOptional(string? value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
     }
 }

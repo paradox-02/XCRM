@@ -79,5 +79,21 @@ namespace XCRM.Application.Customers
             return new PagedResult<CustomerDto>(
                 items, totalCount, request.PageNumber, request.PageSize);
         }
+
+        public async Task<CustomerDto?> UpdateDetailsAsync(long id, UpdateCustomerRequest request, CancellationToken cancellationToken)
+        {
+            var customer = await _customerRepository.GetForUpdateAsync(id, cancellationToken);
+
+            if (customer is null)
+            {
+                return null;
+            }
+
+            customer.UpdateDetails(request.Address, request.Remark);
+
+            await _customerRepository.SaveChangesAsync(cancellationToken);
+
+            return ToDto(customer);
+        }
     }
 }

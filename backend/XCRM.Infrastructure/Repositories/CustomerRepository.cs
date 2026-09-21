@@ -62,5 +62,10 @@ namespace XCRM.Infrastructure.Repositories
         {
             return BuildQuery(keyword).CountAsync(cancellationToken);
         }
+
+        public Task<Customer?> GetForUpdateAsync(long id, CancellationToken cancellationToken)
+        {
+            return _context.Customers.FirstOrDefaultAsync(n => n.Id == id, cancellationToken);
+        }
     }
 }
