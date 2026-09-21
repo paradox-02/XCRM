@@ -1,4 +1,5 @@
 ﻿using XCRM.Application.Common.Exceptions;
+using XCRM.Application.Common.Pagination;
 using XCRM.Application.Customers.DTOs;
 using XCRM.Domain.Entities;
 using XCRM.Domain.Repositories;
@@ -61,6 +62,22 @@ namespace XCRM.Application.Customers
                 customer.Remark,
                 customer.IsActive,
                 customer.CreateTime);
+        }
+
+        public async Task<PagedResult<CustomerDto>> GetListAsync(GetCustomerRequest request, CancellationToken cancellationToken)
+        {
+            var keyword = string.IsNullOrWhiteSpace(request.Keyword) ? null : request.Keyword.Trim();
+
+            var skip = (request.PageNumber - 1) * request.PageSize;
+
+            var totalCount = await _customerRepository.CountAsync(keyword, cancellationToken);
+
+            var customers = await _customerRepository.GetPageAsync(keyword, skip, request.PageSize, cancellationToken);
+
+            var items = customers.Select(ToDto).ToList();
+
+            return new PagedResult<CustomerDto>(
+                items, totalCount, request.PageNumber, request.PageSize);
         }
     }
 }

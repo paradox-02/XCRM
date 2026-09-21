@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using XCRM.Application.Customers.DTOs;
+using XCRM.Application.Common.Pagination;
 
 namespace XCRM.Application.Customers
 {
@@ -9,5 +10,6 @@ namespace XCRM.Application.Customers
     {
         Task<CustomerDto> CreateAsync(CreateCustomerRequest request, CancellationToken cancellationToken);
         Task<CustomerDto?> GetByIdAsync(long id, CancellationToken cancellationToken);
+        Task<PagedResult<CustomerDto>> GetListAsync(GetCustomerRequest request, CancellationToken cancellationToken);
     }
 }

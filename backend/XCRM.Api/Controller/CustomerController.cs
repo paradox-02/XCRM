@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using XCRM.Application.Common.Pagination;
 using XCRM.Application.Customers;
 using XCRM.Application.Customers.DTOs;
 
@@ -36,6 +37,14 @@ namespace XCRM.Api.Controller
             }
 
             return Ok(customer);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<CustomerDto>>> GetList([FromQuery] GetCustomerRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _customerService.GetListAsync(request, cancellationToken);
+
+            return Ok(result);
         }
     }
 }
