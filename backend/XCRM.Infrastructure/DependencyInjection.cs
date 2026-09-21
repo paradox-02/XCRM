@@ -28,6 +28,8 @@ namespace XCRM.Infrastructure
 
             services.AddScoped<ISysUserRepository, SysUserRepository>();
 
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+
             services.AddSingleton<IPasswordHasher, AspNetCorePasswordHasher>();
 
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));

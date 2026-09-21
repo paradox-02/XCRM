@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using XCRM.Application.Authentication;
+using XCRM.Application.Customers;
 using XCRM.Application.Users;
 
 namespace XCRM.Application
@@ -14,6 +15,8 @@ namespace XCRM.Application
             services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IAuthService, AuthService>();
+
+            services.AddScoped<ICustomerService, CustomerService>();
 
             return services;
         }
