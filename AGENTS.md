@@ -102,6 +102,7 @@ This repository is both an application project and a step-by-step full-stack lea
 - 安装新 NuGet 包前，解释用途、归属项目和必要性，并先检查是否已存在。 / Before installing a NuGet package, explain its role, owning project, and necessity, and check whether it already exists.
 - 任务只是应用仓库已有迁移时，不创建新迁移。 / Do not create a new EF Core migration when the task is only to apply existing migrations.
 - 未经明确教学与验证，不改变公共契约、数据库结构、认证行为或错误响应。 / Do not change public contracts, database schema, authentication behavior, or error responses without explicit teaching and verification.
+- 涉及重复数据或唯一性规则时，应用层预检查用于返回友好的业务错误，数据库唯一约束用于防止并发写入破坏数据一致性；添加唯一约束前先检查并处理现有重复数据，生成迁移后检查实际索引和过滤条件。 / For duplicate-data or uniqueness rules, use application-level pre-checks to return friendly business errors and database unique constraints to protect consistency under concurrent writes. Inspect and resolve existing duplicates before adding a unique constraint, then review the generated migration's indexes and filters.
 
 ## Git 工作流 / Git Workflow
 
