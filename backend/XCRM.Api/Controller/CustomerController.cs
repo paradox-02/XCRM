@@ -59,5 +59,18 @@ namespace XCRM.Api.Controller
 
             return Ok(customer);
         }
+
+        [HttpPut("{id:long}/status")]
+        public async Task<ActionResult<CustomerDto>> UpdateStatus(long id, UpdateCustomerStatusRequest request, CancellationToken cancellationToken)
+        {
+            var customer = await _customerService.UpdateStatusAsync(id, request, cancellationToken);
+
+            if (customer is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(customer);
+        }
     }
 }

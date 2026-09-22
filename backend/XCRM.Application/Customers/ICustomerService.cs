@@ -12,5 +12,6 @@ namespace XCRM.Application.Customers
         Task<CustomerDto?> GetByIdAsync(long id, CancellationToken cancellationToken);
         Task<PagedResult<CustomerDto>> GetListAsync(GetCustomerRequest request, CancellationToken cancellationToken);
         Task<CustomerDto?> UpdateDetailsAsync(long id, UpdateCustomerRequest request, CancellationToken cancellationToken);
+        Task<CustomerDto?> UpdateStatusAsync(long id, UpdateCustomerStatusRequest request, CancellationToken cancellationToken);
     }
 }

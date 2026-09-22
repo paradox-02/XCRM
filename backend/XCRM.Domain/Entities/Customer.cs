@@ -30,12 +30,22 @@ namespace XCRM.Domain.Entities
 
         public void Disable()
         {
+            if (!IsActive)
+            {
+                return;
+            }
+
             IsActive = false;
             UpdateTime = DateTime.UtcNow;
         }
 
         public void Enable()
         {
+            if (IsActive)
+            {
+                return;
+            }
+
             IsActive = true;
             UpdateTime = DateTime.UtcNow;
         }
@@ -51,5 +61,7 @@ namespace XCRM.Domain.Entities
         {
             return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
         }
+
+        
     }
 }

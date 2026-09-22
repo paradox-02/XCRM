@@ -95,5 +95,28 @@ namespace XCRM.Application.Customers
 
             return ToDto(customer);
         }
+
+        public async Task<CustomerDto?> UpdateStatusAsync(long id, UpdateCustomerStatusRequest request, CancellationToken cancellationToken)
+        {
+            var customer = await _customerRepository.GetForUpdateAsync(id, cancellationToken);
+
+            if (customer is null)
+            {
+                return null;
+            }
+
+            if (request.IsActive == true)
+            {
+                customer.Enable();
+            }
+            else
+            {
+                customer.Disable();
+            }
+
+            await _customerRepository.SaveChangesAsync(cancellationToken);
+
+            return ToDto(customer);
+        }
     }
 }
