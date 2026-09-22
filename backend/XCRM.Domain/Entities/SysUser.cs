@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using XCRM.Domain.Common;
 
 namespace XCRM.Domain.Entities
 {
@@ -86,9 +87,9 @@ namespace XCRM.Domain.Entities
 
         public void UpdateProfile(string? email, string? phone)
         {
-            Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
+            Email = TextNormalizer.NormalizeOptional(email);
 
-            Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
+            Phone = TextNormalizer.NormalizeOptional(phone);
 
             UpdateTime = DateTime.UtcNow;
         }

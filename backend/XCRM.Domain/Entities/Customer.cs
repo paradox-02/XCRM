@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using XCRM.Domain.Common;
 
 namespace XCRM.Domain.Entities
 {
@@ -52,16 +53,9 @@ namespace XCRM.Domain.Entities
 
         public void UpdateDetails(string? address, string? remark)
         {
-            Address = NormalizeOptional(address);
-            Remark = NormalizeOptional(remark);
+            Address = TextNormalizer.NormalizeOptional(address);
+            Remark = TextNormalizer.NormalizeOptional(remark);
             UpdateTime = DateTime.UtcNow;
         }
-
-        private static string? NormalizeOptional(string? value)
-        {
-            return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-        }
-
-        
     }
 }

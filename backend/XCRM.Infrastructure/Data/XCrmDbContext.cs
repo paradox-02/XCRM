@@ -15,6 +15,7 @@ namespace XCRM.Infrastructure.Data
 
         public DbSet<SysUser> Users => Set<SysUser>();
         public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<CustomerContact> CustomerContacts => Set<CustomerContact>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +56,26 @@ namespace XCRM.Infrastructure.Data
 
                 n.Property(x => x.Remark)
                 .HasMaxLength(1000);
+            });
+
+            modelBuilder.Entity<CustomerContact>(n =>
+            {
+                n.HasKey(x => x.Id);
+
+                n.Property(x => x.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+                n.Property(x => x.Phone)
+                .HasMaxLength(20);
+
+                n.Property(x => x.Email)
+                .HasMaxLength(200);
+
+                n.HasOne<Customer>()
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }
