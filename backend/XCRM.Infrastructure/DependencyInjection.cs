@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Text;
 using XCRM.Application.Common.Security;
 using XCRM.Domain.Repositories;
 using XCRM.Infrastructure.Authentication;
@@ -35,6 +31,8 @@ namespace XCRM.Infrastructure
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
             services.AddSingleton<IAccessTokenGenerator, JwtAccessTokenGenerator>();
+
+            services.AddScoped<ICustomerContactRepository, CustomerContactRepository>();
 
             return services;
         }

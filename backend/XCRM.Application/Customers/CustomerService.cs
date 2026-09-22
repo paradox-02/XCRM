@@ -9,10 +9,12 @@ namespace XCRM.Application.Customers
     public sealed class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly ICustomerContactRepository _customerContactRepository;
 
-        public CustomerService(ICustomerRepository customerRepository)
+        public CustomerService(ICustomerRepository customerRepository, ICustomerContactRepository customerContactRepository)
         {
             _customerRepository = customerRepository;
+            _customerContactRepository = customerContactRepository;
         }
 
         public async Task<CustomerDto> CreateAsync(CreateCustomerRequest request, CancellationToken cancellationToken)
@@ -117,6 +119,47 @@ namespace XCRM.Application.Customers
             await _customerRepository.SaveChangesAsync(cancellationToken);
 
             return ToDto(customer);
+        }
+
+        public async Task<CustomerContactDto?> CreateContactAsync(long customerId, CreateCustomerContactRequest request, CancellationToken cancellationToken)
+        {
+            var customer = await _customerRepository.GetByIdAsync(customerId, cancellationToken);
+
+            if (customer is null)
+            {
+                return null;
+            }
+
+            var contact = new CustomerContact(
+                customerId,
+                request.Name,
+                request.Phone,
+                request.Email);
+
+            var exists = await _customerContactRepository.ExistsByPhoneOrEmailAsync(customer.Id, contact.Phone, contact.Email, cancellationToken);
+
+            if (exists)
+            {
+                throw new ConflictException("该客户下已经存在相同的电话或者邮箱");
+            }
+
+            await _customerContactRepository.AddAsync(contact, cancellationToken);
+
+            await _customerContactRepository.SaveChangesAsync(cancellationToken);
+
+            return ToContactDto(contact);
+        }
+
+        private static CustomerContactDto ToContactDto(CustomerContact contact)
+        {
+            return new CustomerContactDto(
+                contact.Id,
+                contact.CustomerId,
+                contact.Name,
+                contact.Phone,
+                contact.Email,
+                contact.IsActive,
+                contact.CreateTime);
         }
     }
 }

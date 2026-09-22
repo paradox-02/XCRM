@@ -62,6 +62,14 @@ namespace XCRM.Infrastructure.Data
             {
                 n.HasKey(x => x.Id);
 
+                n.HasIndex(x => new { x.CustomerId, x.Phone })
+                .IsUnique()
+                .HasFilter("[Phone] IS NOT NULL");
+
+                n.HasIndex(x => new { x.CustomerId, x.Email })
+                .IsUnique()
+                .HasFilter("[Email] IS NOT NULL");
+
                 n.Property(x => x.Name)
                 .HasMaxLength(100)
                 .IsRequired();

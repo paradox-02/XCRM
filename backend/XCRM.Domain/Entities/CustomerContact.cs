@@ -32,5 +32,27 @@ namespace XCRM.Domain.Entities
             IsActive = true;
             CreateTime = DateTime.UtcNow;
         }
+
+        public void Disable()
+        {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            IsActive = false;
+            UpdateTime = DateTime.UtcNow;
+        }
+
+        public void Enable()
+        {
+            if (IsActive)
+            {
+                return;
+            }
+
+            IsActive = true;
+            UpdateTime = DateTime.UtcNow;
+        }
     }
 }

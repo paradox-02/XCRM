@@ -72,5 +72,18 @@ namespace XCRM.Api.Controller
 
             return Ok(customer);
         }
+
+        [HttpPost("{customerId:long}/contacts")]
+        public async Task<ActionResult<CustomerContactDto>> CreateContact(long customerId, CreateCustomerContactRequest request, CancellationToken cancellationToken)
+        {
+            var contact = await _customerService.CreateContactAsync(customerId, request, cancellationToken);
+
+            if (contact is null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(StatusCodes.Status201Created, contact);
+        }
     }
 }
