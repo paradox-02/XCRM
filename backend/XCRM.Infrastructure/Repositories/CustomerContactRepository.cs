@@ -51,5 +51,23 @@ namespace XCRM.Infrastructure.Repositories
                 .ThenByDescending(n => n.Id)
                 .ToListAsync(cancellationToken);
         }
+
+        public Task<CustomerContact?> GetForUpdateAsync(long customerId, long contactId, CancellationToken cancellationToken)
+        {
+            return _context.CustomerContacts.FirstOrDefaultAsync(n => n.CustomerId == customerId && n.Id == contactId, cancellationToken);
+        }
+
+        public Task<bool> ExistsByPhoneOrEmailExceptIdAsync(long customerId, long contactId, string? phone, string? email, CancellationToken cancellationToken)
+        {
+            if (phone is null && email is null)
+            {
+                return Task.FromResult(false);
+            }
+
+            return _context.CustomerContacts.AsNoTracking()
+                .AnyAsync(n => n.CustomerId == customerId && n.Id != contactId
+                && ((phone != null && n.Phone == phone)
+                || (email != null && n.Email == email)), cancellationToken);
+        }
     }
 }

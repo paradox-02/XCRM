@@ -98,5 +98,18 @@ namespace XCRM.Api.Controller
 
             return Ok(contacts);
         }
+
+        [HttpPut("{customerId:long}/contacts/{contactId:long}")]
+        public async Task<ActionResult<CustomerContactDto>> UpdateContact(long customerId, long contactId, UpdateCustomerContactRequest request, CancellationToken cancellationToken)
+        {
+            var contact = await _customerService.UpdateContactAsync(customerId, contactId, request, cancellationToken);
+
+            if (contact is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(contact);
+        }
     }
 }
