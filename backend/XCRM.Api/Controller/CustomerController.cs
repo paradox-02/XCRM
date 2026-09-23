@@ -85,5 +85,18 @@ namespace XCRM.Api.Controller
 
             return StatusCode(StatusCodes.Status201Created, contact);
         }
+
+        [HttpGet("{customerId:long}/contacts")]
+        public async Task<ActionResult<IReadOnlyList<CustomerContactDto>>> GetContacts(long customerId, CancellationToken cancellationToken)
+        {
+            var contacts = await _customerService.GetContactsAsync(customerId, cancellationToken);
+
+            if (contacts is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(contacts);
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace XCRM.Domain.Repositories
         Task AddAsync(CustomerContact contact, CancellationToken cancellationToken = default);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<bool> ExistsByPhoneOrEmailAsync(long customerId, string? phone, string? email, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<CustomerContact>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default);
     }
 }

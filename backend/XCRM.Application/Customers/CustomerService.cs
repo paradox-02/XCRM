@@ -161,5 +161,19 @@ namespace XCRM.Application.Customers
                 contact.IsActive,
                 contact.CreateTime);
         }
+
+        public async Task<IReadOnlyList<CustomerContactDto>?> GetContactsAsync(long customerId, CancellationToken cancellationToken)
+        {
+            var customer = await _customerRepository.GetByIdAsync(customerId, cancellationToken);
+
+            if (customer is null)
+            {
+                return null;
+            }
+
+            var contacts = await _customerContactRepository.GetByCustomerIdAsync(customerId, cancellationToken);
+
+            return contacts.Select(ToContactDto).ToList();
+        }
     }
 }

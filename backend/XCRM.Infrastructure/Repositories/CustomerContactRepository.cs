@@ -42,5 +42,14 @@ namespace XCRM.Infrastructure.Repositories
             ),
             cancellationToken);
         }
+
+        public async Task<IReadOnlyList<CustomerContact>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken)
+        {
+            return await _context.CustomerContacts.AsNoTracking()
+                .Where(n => n.CustomerId == customerId)
+                .OrderByDescending(n => n.CreateTime)
+                .ThenByDescending(n => n.Id)
+                .ToListAsync(cancellationToken);
+        }
     }
 }
