@@ -191,7 +191,29 @@ namespace XCRM.Application.Customers
 
             if (exists)
             {
-                throw new ConflictException("该客户下已经存在相同的电话和邮箱");
+                throw new ConflictException("该客户下已经存在相同的电话或者邮箱");
+            }
+
+            await _customerContactRepository.SaveChangesAsync(cancellationToken);
+            return ToContactDto(contact);
+        }
+
+        public async Task<CustomerContactDto?> UpdateContactStatusAsync(long customerId, long contactId, UpdateCustomerStatusRequest request, CancellationToken cancellationToken)
+        {
+            var contact = await _customerContactRepository.GetForUpdateAsync(customerId, contactId, cancellationToken);
+
+            if (contact is null)
+            {
+                return null;
+            }
+
+            if (request.IsActive == true)
+            {
+                contact.Enable();
+            }
+            else
+            {
+                contact.Disable();
             }
 
             await _customerContactRepository.SaveChangesAsync(cancellationToken);
