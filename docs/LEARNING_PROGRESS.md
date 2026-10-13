@@ -2,11 +2,11 @@
 
 ## 当前状态
 
-- 日期：2026-09-30
+- 日期：2026-10-13
 - 当前课程分支：`lesson/customer-management`
-- 已核验提交：`dcab940 feat: update customer contact status`
-- 远程状态：本地分支与 `origin/lesson/customer-management` 一致
-- 当前未提交改动：无业务代码改动；仅本进度文件待提交
+- 已核验提交：`03340fb feat: create customer follow-up records`
+- 远程状态：只读查询 GitHub 已确认远程 `lesson/customer-management` 与本地 HEAD 一致，均为 `03340fb`
+- 当前未提交改动：业务代码已提交并推送；仅 `AGENTS.md` 和本进度文件的教学约定及检查点记录待提交
 
 ## 已完成并理解
 
@@ -20,17 +20,25 @@
 - 完成客户联系人启用和停用；复用领域实体的状态方法，并按客户 ID 限定操作对象。
 - 使用应用层重复预检查返回 `409 Conflict`，并使用数据库过滤唯一索引防止并发重复写入。
 - 理解迁移文件、已应用迁移和实际数据库结构是三个需要分别核验的状态。
+- 完成 `CustomerFollowUp` 实体、EF Core 配置和迁移，以及新增跟进记录的 DTO、仓储、依赖注入、应用服务和 HTTP 接口。
+- 跟进记录的客户 ID 只来自路由；选择联系人时按客户 ID 和联系人 ID 查询，防止引用其他客户的联系人。
+- 电话快照在创建时保存：手动填写时使用填写值，未填写且选择了联系人时取联系人电话，后续联系人资料变化不改写历史快照。
+- 用请求 DTO 的 `[Required]` 校验空内容，用 Service 的空值检查处理客户或联系人不存在；领域构造函数保留核心规则校验。
+- 客户创建结果复用 `ToDto(customer)`，减少重复映射；通过短练习理解 `Func<Customer, CustomerDto>` 的输入输出、`Action` 无返回值，以及泛型集合转换中的循环与转换行为。
 
 ## 已执行验证
 
 - `dotnet build .\backend\XCRM.Api\XCRM.Api.csproj --no-restore`：通过，0 个警告、0 个错误。
-- `dotnet test .\backend\XCRM.Application.Tests\XCRM.Application.Tests.csproj --no-build --no-restore`：6/6 通过。
+- `dotnet test .\backend\XCRM.Application.Tests\XCRM.Application.Tests.csproj --no-restore`：现有 6 项用户与登录测试通过；这些测试不覆盖跟进记录用例。
 - 新增联系人接口成功场景：返回 `201 Created`，数据写入数据库。
 - 重复电话或邮箱场景：返回 `409 Conflict`，进入预期业务分支。
 - 联系人列表接口：有联系人返回 `200` 和数组，客户不存在返回 `404`，客户存在但无联系人返回 `200 []`。
 - 修改联系人接口：成功更新返回 `200`，学习者确认数据库中的资料已更新，并报告后续失败场景测试完成。
 - 联系人状态接口：停用和重新启用均返回 `200` 且状态正确；跨客户访问同一联系人返回 `404`。
 - `AddCustomerContacts` 与 `AddCustomerContactUniqueIndexes` 迁移均已应用。
+- `AddCustomerFollowUps` 迁移已生成并检查；学习者确认数据库更新完成，新增接口成功路径已验证。
+- 2026-10-13 验收 `POST /api/customers/{customerId}/follow-ups`：成功返回 `201`、记录 ID 和联系人电话快照；查不到所属联系人返回 `404`；空内容返回 `400` 且错误明确指向 `Content`。截图与当天请求日志的 `201 / 404 / 400` 一致。
+- 最后一次 API 项目构建为 0 警告、0 错误；提交后只读核验 GitHub 分支与本地提交一致。
 
 ## 已确认错误与原因
 
@@ -39,10 +47,13 @@
 - 多行 `dotnet ef` 命令曾发生参数解析错误，改用单行 `-p` 和 `-s` 参数后解决。
 - 联系人仓储实现曾误写为 `GetByCustomerByIdAsync`：方法名与接口不一致导致 `CS0535`，已修正为 `GetByCustomerIdAsync`。
 - 联系人更新查重曾用 `Id == contactId`，会检查自身而漏掉其他联系人；已改为 `Id != contactId`。
+- 跟进请求曾在路由和请求体中重复包含客户 ID；已删除请求 DTO 中的客户 ID，并从路由传入 Service。
+- 空内容曾被返回 `null` 或抛出冲突异常，混成 `404` 或 `409`；已改为请求校验返回 `400`，不再用“资源不存在”表示输入无效。
+- 收尾时曾误删联系人查不到的判断，出现 `CS8602` 空引用警告并可能在运行时访问 `contact.Id` 失败；已恢复判断，重新构建无警告，联系人不存在场景返回 `404`。
 
 ## 下一学习步骤
 
-- 明确客户跟进记录的归属规则与最小字段，为下一个 CRM 业务用例建模。
+- 实现指定客户的跟进记录列表查询，区分客户不存在返回 `404` 与客户存在但无记录返回 `200 []`，按创建时间倒序并用 ID 保证排序稳定，复用已学的 DTO 映射与 LINQ。
 
 ## 本机配置
 

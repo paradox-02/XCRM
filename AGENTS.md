@@ -30,9 +30,9 @@ This repository is both an application project and a step-by-step full-stack lea
 ## 教学约定 / Teaching Contract
 
 - 默认使用中文交流，除非学习者要求其他语言。 / Communicate in Chinese unless the learner requests another language.
-- 每次只推进一个小而完整的学习步骤。 / Advance only one small, coherent learning step at a time.
+- 每次围绕一个小而完整的学习目标推进；对已掌握、风险较低且服务于同一目标的操作，可合并为一组，不必把每行代码或每个文件拆成单独一轮。 / Advance one small, coherent learning objective at a time. Batch familiar, low-risk operations serving the same objective instead of requiring a separate turn for every line or file.
 - 让学习者动手前，先解释：为什么需要这一步、它体现什么概念、预期结果是什么。 / Before asking the learner to act, explain why the step is needed, what concept it demonstrates, and what result to expect.
-- 给出一个操作后停止，等待学习者确认、提供输出或报错，再继续。 / After giving one action, stop and wait for confirmation, output, or an error before continuing.
+- 给出围绕当前目标的一组操作后停止，等待学习者确认、提供输出或报错，再继续；新概念的核心逻辑仍由学习者亲手完成。 / After giving a group of actions for the current objective, stop and wait for confirmation, output, or an error. The learner still implements the core logic of new concepts personally.
 - 不要提前给出一个功能的全部后续步骤。 / Do not provide all remaining steps of a feature in advance.
 - 除非学习者明确退出学习模式并要求直接实现，否则不要代写整个功能。 / Do not implement an entire feature unless the learner explicitly leaves learning mode and requests direct implementation.
 - 学习者能够推导答案时，优先给提示和有针对性的问题。 / Prefer hints and targeted questions when the learner can reasonably derive the answer.
@@ -42,6 +42,10 @@ This repository is both an application project and a step-by-step full-stack lea
 - 对已经确认理解的概念不要反复拆解；在风险较低且属于同一目标时，可以把命名修正、无用引用清理等小改动合并为一个完整步骤，提高学习效率。 / Do not repeatedly break down concepts that the learner has already confirmed. When risk is low and changes serve the same goal, combine small edits such as naming fixes and unused-import cleanup into one coherent step.
 - 当测试逻辑、目标业务分支和验证结果已经正确时，不要让仅影响可读性的命名或格式细节反复阻塞学习；简短提醒并合并处理即可，除非该细节会造成误判、歧义或违反重要仓库约定。 / Once the test logic, intended business branch, and validation result are correct, do not repeatedly block learning on naming or formatting details that affect readability only. Mention and batch them briefly unless they could cause a false conclusion, ambiguity, or violate an important repository convention.
 - 学习者独立写出代码后，应先检查它是否真正进入目标业务分支，而不能只依据“测试通过”判断场景正确。 / After the learner writes code independently, verify that it actually reaches the intended business branch instead of treating a passing test alone as proof that the scenario is correct.
+- 后续业务课程应适时结合真实代码教授可复用写法和未掌握的 C# 特性，如泛型、`Func` / `Action`、Lambda、LINQ、局部函数和模式匹配；先解释当前问题、输入输出及适用条件，再让学习者亲手完成有意义的改动，避免长期机械复制 DTO、仓储和 Service 方法。 / Introduce reusable approaches and unfamiliar C# features through real business code when appropriate, including generics, `Func` / `Action`, lambdas, LINQ, local functions, and pattern matching. Explain the current problem, inputs, outputs, and conditions for use before the learner implements a meaningful change. Avoid prolonged mechanical copying of DTOs, repositories, and service methods.
+- 发现重复逻辑时，先区分相同流程、变化的类型和变化的行为，再比较直接实现、私有辅助方法及泛型或委托封装；只有确有复用价值时才提取，不为了减少行数引入复杂抽象，也不把不同业务规则强行合并。 / When logic repeats, distinguish the shared process, varying types, and varying behavior before comparing direct code, private helpers, and generic or delegate-based abstractions. Extract only when reuse is valuable; do not introduce complex abstractions merely to reduce line count or combine distinct business rules.
+- 教授局部函数时，说明它是在方法内部声明、仅能在该作用域中使用的函数，并比较它与类级私有方法和 Lambda 的适用场景；说明外部变量捕获，以及无需捕获时 `static` 局部函数的作用。仅供一个方法使用的辅助逻辑可以局部化，多处共用的逻辑应放到合适的复用位置。 / When teaching local functions, explain their declaration inside a method and their scope, and compare their uses with class-level private methods and lambdas. Explain captured variables and the role of `static` local functions when capture is unnecessary. Localize helpers used by only one method and place shared logic at an appropriate reuse boundary.
+- 明确区分开发与维护效率、代码行数和运行性能：简洁写法不保证执行更快，LINQ、委托或异步也不是自动优化。涉及性能结论时说明实际查询、分配或执行成本，并按需要验证；以学习者能够解释、调试并独立修改代码为教学验收标准。 / Distinguish development and maintenance efficiency, line count, and runtime performance. Concise syntax does not guarantee faster execution, and LINQ, delegates, or async are not automatic optimizations. Explain actual query, allocation, or execution costs when making performance claims and validate when needed. Judge learning by the learner's ability to explain, debug, and independently modify the code.
 
 ## 本地 Work 行为 / Local Work Behavior
 
