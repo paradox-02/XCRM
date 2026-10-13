@@ -16,6 +16,7 @@ namespace XCRM.Infrastructure.Data
         public DbSet<SysUser> Users => Set<SysUser>();
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<CustomerContact> CustomerContacts => Set<CustomerContact>();
+        public DbSet<CustomerFollowUp> CustomerFollowUps => Set<CustomerFollowUp>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -83,6 +84,27 @@ namespace XCRM.Infrastructure.Data
                 n.HasOne<Customer>()
                 .WithMany()
                 .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<CustomerFollowUp>(n =>
+            {
+                n.HasKey(x => x.Id);
+
+                n.Property(x => x.PhoneSnapshot)
+                .HasMaxLength(20);
+
+                n.Property(x => x.Content)
+                .HasMaxLength(1000);
+
+                n.HasOne<Customer>()
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                n.HasOne<CustomerContact>()
+                .WithMany()
+                .HasForeignKey(x => x.ContactId)
                 .OnDelete(DeleteBehavior.Restrict);
             });
         }

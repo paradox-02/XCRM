@@ -124,5 +124,18 @@ namespace XCRM.Api.Controller
 
             return Ok(contact);
         }
+
+        [HttpPost("{customerId:long}/follow-ups")]
+        public async Task<ActionResult<CustomerFollowUpDto>> CreateFollowUp(long customerId, CreateCustomerFollowUpRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _customerService.CreateCustomerFollowUpAsync(customerId, request, cancellationToken);
+
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(StatusCodes.Status201Created, result);
+        }
     }
 }

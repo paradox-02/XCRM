@@ -34,6 +34,8 @@ namespace XCRM.Infrastructure
 
             services.AddScoped<ICustomerContactRepository, CustomerContactRepository>();
 
+            services.AddScoped<ICustomerFollowUpRepository, CustomerFollowUpRepository>();
+
             return services;
         }
     }

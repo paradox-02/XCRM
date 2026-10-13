@@ -52,7 +52,7 @@ namespace XCRM.Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public Task<CustomerContact?> GetForUpdateAsync(long customerId, long contactId, CancellationToken cancellationToken)
+        public Task<CustomerContact?> GetCustomerContactByIdAsync(long customerId, long contactId, CancellationToken cancellationToken)
         {
             return _context.CustomerContacts.FirstOrDefaultAsync(n => n.CustomerId == customerId && n.Id == contactId, cancellationToken);
         }

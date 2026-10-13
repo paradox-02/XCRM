@@ -103,6 +103,44 @@ namespace XCRM.Infrastructure.Migrations
                     b.ToTable("CustomerContacts");
                 });
 
+            modelBuilder.Entity("XCRM.Domain.Entities.CustomerFollowUp", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ContactId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PhoneSnapshot")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("CustomerFollowUps");
+                });
+
             modelBuilder.Entity("XCRM.Domain.Entities.SysUser", b =>
                 {
                     b.Property<long>("Id")
@@ -148,6 +186,20 @@ namespace XCRM.Infrastructure.Migrations
 
             modelBuilder.Entity("XCRM.Domain.Entities.CustomerContact", b =>
                 {
+                    b.HasOne("XCRM.Domain.Entities.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("XCRM.Domain.Entities.CustomerFollowUp", b =>
+                {
+                    b.HasOne("XCRM.Domain.Entities.CustomerContact", null)
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("XCRM.Domain.Entities.Customer", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")

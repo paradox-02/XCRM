@@ -1,4 +1,5 @@
-﻿using XCRM.Application.Common.Exceptions;
+﻿using System.Diagnostics.Contracts;
+using XCRM.Application.Common.Exceptions;
 using XCRM.Application.Common.Pagination;
 using XCRM.Application.Customers.DTOs;
 using XCRM.Domain.Entities;
@@ -10,11 +11,13 @@ namespace XCRM.Application.Customers
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly ICustomerContactRepository _customerContactRepository;
+        private readonly ICustomerFollowUpRepository _customerFollowUpRepository;
 
-        public CustomerService(ICustomerRepository customerRepository, ICustomerContactRepository customerContactRepository)
+        public CustomerService(ICustomerRepository customerRepository, ICustomerContactRepository customerContactRepository, ICustomerFollowUpRepository customerFollowUpRepository)
         {
             _customerRepository = customerRepository;
             _customerContactRepository = customerContactRepository;
+            _customerFollowUpRepository = customerFollowUpRepository;
         }
 
         public async Task<CustomerDto> CreateAsync(CreateCustomerRequest request, CancellationToken cancellationToken)
@@ -34,13 +37,7 @@ namespace XCRM.Application.Customers
 
             await _customerRepository.SaveChangesAsync(cancellationToken);
 
-            return new CustomerDto(
-                customer.Id,
-                customer.Name,
-                customer.Address,
-                customer.Remark,
-                customer.IsActive,
-                customer.CreateTime);
+            return ToDto(customer);
         }
 
         public async Task<CustomerDto?> GetByIdAsync(long id, CancellationToken cancellationToken)
@@ -178,7 +175,7 @@ namespace XCRM.Application.Customers
 
         public async Task<CustomerContactDto?> UpdateContactAsync(long customerId, long contactId, UpdateCustomerContactRequest request, CancellationToken cancellationToken)
         {
-            var contact = await _customerContactRepository.GetForUpdateAsync(customerId, contactId, cancellationToken);
+            var contact = await _customerContactRepository.GetCustomerContactByIdAsync(customerId, contactId, cancellationToken);
 
             if (contact is null)
             {
@@ -200,7 +197,7 @@ namespace XCRM.Application.Customers
 
         public async Task<CustomerContactDto?> UpdateContactStatusAsync(long customerId, long contactId, UpdateCustomerStatusRequest request, CancellationToken cancellationToken)
         {
-            var contact = await _customerContactRepository.GetForUpdateAsync(customerId, contactId, cancellationToken);
+            var contact = await _customerContactRepository.GetCustomerContactByIdAsync(customerId, contactId, cancellationToken);
 
             if (contact is null)
             {
@@ -218,6 +215,56 @@ namespace XCRM.Application.Customers
 
             await _customerContactRepository.SaveChangesAsync(cancellationToken);
             return ToContactDto(contact);
+        }
+
+        public async Task<CustomerFollowUpDto?> CreateCustomerFollowUpAsync(long customerId, CreateCustomerFollowUpRequest request, CancellationToken cancellationToken)
+        {
+            var customer = await _customerRepository.GetByIdAsync(customerId, cancellationToken);
+
+            if (customer is null)
+            {
+                return null;
+            }
+
+            long? contactId = null;
+            string? phoneSnapshot = request.PhoneSnapshot;
+
+            if (request.ContactId is not null)
+            {
+                var contact = await _customerContactRepository.GetCustomerContactByIdAsync(customer.Id, request.ContactId.Value, cancellationToken);
+                if (contact is null)
+                {
+                    return null;
+                }
+                contactId = contact.Id;
+                if (string.IsNullOrWhiteSpace(request.PhoneSnapshot))
+                {
+                    phoneSnapshot = contact.Phone;
+                }
+            }
+
+            var customerFollowUp = new CustomerFollowUp(
+                customer.Id,
+                request.Content,
+                contactId,
+                phoneSnapshot);
+
+            await _customerFollowUpRepository.AddAsync(customerFollowUp, cancellationToken);
+            await _customerFollowUpRepository.SaveChangesAsync(cancellationToken);
+
+            return ToFollowUpDto(customerFollowUp);
+        }
+
+        private static CustomerFollowUpDto ToFollowUpDto(CustomerFollowUp c)
+        {
+            return new CustomerFollowUpDto(
+                c.Id,
+                c.CustomerId,
+                c.ContactId,
+                c.PhoneSnapshot,
+                c.Content,
+                c.CreateTime
+            );
         }
     }
 }
