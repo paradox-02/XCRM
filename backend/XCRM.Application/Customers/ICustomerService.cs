@@ -18,5 +18,6 @@ namespace XCRM.Application.Customers
         Task<CustomerContactDto?> UpdateContactAsync(long customerId, long contactId, UpdateCustomerContactRequest request, CancellationToken cancellationToken);
         Task<CustomerContactDto?> UpdateContactStatusAsync(long customerId, long contactId, UpdateCustomerStatusRequest request, CancellationToken cancellationToken);
         Task<CustomerFollowUpDto?> CreateCustomerFollowUpAsync(long customerId, CreateCustomerFollowUpRequest request, CancellationToken cancellationToken);
+        Task<IReadOnlyList<CustomerFollowUpDto>?> GetFollowUpAsync(long customerId, CancellationToken cancellationToken);
     }
 }

@@ -9,5 +9,6 @@ namespace XCRM.Domain.Repositories
     {
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task AddAsync(CustomerFollowUp customerFollowUp, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<CustomerFollowUp>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default);
     }
 }

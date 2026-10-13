@@ -137,5 +137,17 @@ namespace XCRM.Api.Controller
 
             return StatusCode(StatusCodes.Status201Created, result);
         }
+
+        [HttpGet("{customerId:long}/follow-ups")]
+        public async Task<ActionResult<IReadOnlyList<CustomerFollowUpDto>>> GetFollowUps(long customerId, CancellationToken cancellationToken)
+        {
+            var followUps = await _customerService.GetFollowUpAsync(customerId, cancellationToken);
+
+            return followUps switch
+            {
+                null => NotFound(),
+                _ => Ok(followUps)
+            };
+        }
     }
 }

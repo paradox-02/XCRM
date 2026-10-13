@@ -266,5 +266,19 @@ namespace XCRM.Application.Customers
                 c.CreateTime
             );
         }
+
+        public async Task<IReadOnlyList<CustomerFollowUpDto>?> GetFollowUpAsync(long customerId, CancellationToken cancellationToken)
+        {
+            var customer = await _customerRepository.GetByIdAsync(customerId, cancellationToken);
+
+            if (customer is null)
+            {
+                return null;
+            }
+
+            var followUps = await _customerFollowUpRepository.GetByCustomerIdAsync(customerId, cancellationToken);
+
+            return followUps.Select(ToFollowUpDto).ToArray();
+        }
     }
 }

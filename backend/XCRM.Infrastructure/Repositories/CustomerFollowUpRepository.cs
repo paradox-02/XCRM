@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using XCRM.Domain.Entities;
@@ -24,6 +25,15 @@ namespace XCRM.Infrastructure.Repositories
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             return await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<CustomerFollowUp>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default)
+        {
+            return await _context.CustomerFollowUps.AsNoTracking()
+                .Where(n => n.CustomerId == customerId)
+                .OrderByDescending(n => n.CreateTime)
+                .ThenByDescending(n => n.Id)
+                .ToListAsync(cancellationToken);
         }
     }
 }
