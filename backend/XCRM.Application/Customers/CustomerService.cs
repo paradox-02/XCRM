@@ -292,5 +292,12 @@ namespace XCRM.Application.Customers
 
             return page.Map(ToFollowUpDto);
         }
+
+        public async Task<CustomerFollowUpDto?> GetFollowUpByIdAsync(long customerId, long followUpId, CancellationToken cancellationToken)
+        {
+            var followUp = await _customerFollowUpRepository.GetByIdAsync(customerId, followUpId, cancellationToken);
+
+            return followUp is null ? null : ToFollowUpDto(followUp);
+        }
     }
 }

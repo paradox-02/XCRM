@@ -11,5 +11,6 @@ namespace XCRM.Domain.Repositories
         Task AddAsync(CustomerFollowUp customerFollowUp, CancellationToken cancellationToken = default);
         Task<int> CountAsync(long customerId, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<CustomerFollowUp>> GetPageAsync(long customerId, int skip, int take, CancellationToken cancellationToken = default);
+        Task<CustomerFollowUp?> GetByIdAsync(long customerId, long followUpId, CancellationToken cancellationToken = default);
     }
 }

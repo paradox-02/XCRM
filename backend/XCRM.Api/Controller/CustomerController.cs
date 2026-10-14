@@ -149,5 +149,17 @@ namespace XCRM.Api.Controller
                 _ => Ok(followUps)
             };
         }
+
+        [HttpGet(("{customerId:long}/follow-ups/{followUpId:long}"))]
+        public async Task<ActionResult<CustomerFollowUpDto>> GetFollowUpById(long customerId, long followUpId, CancellationToken cancellationToken)
+        {
+            var followUp = await _customerService.GetFollowUpByIdAsync(customerId, followUpId, cancellationToken);
+
+            return followUp switch
+            {
+                null => NotFound(),
+                _ => Ok(followUp)
+            };
+        }
     }
 }

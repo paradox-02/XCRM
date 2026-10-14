@@ -51,5 +51,11 @@ namespace XCRM.Infrastructure.Repositories
 
             return result;
         }
+
+        public async Task<CustomerFollowUp?> GetByIdAsync(long customerId, long followUpId, CancellationToken cancellationToken)
+        {
+            return await BuildQuery(customerId)
+                .FirstOrDefaultAsync(n => n.Id == followUpId, cancellationToken);
+        }
     }
 }
