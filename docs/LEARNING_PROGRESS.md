@@ -4,9 +4,9 @@
 
 - 日期：2026-10-14
 - 当前课程分支：`lesson/customer-management`
-- 已核验提交：`759fb16 feat: list customer follow-up records`
-- 远程状态：只读查询 GitHub 已确认远程 `lesson/customer-management` 与本地 HEAD 一致，均为 `759fb16`
-- 当前未提交改动：`PagedResult<T>.Map<TResult>`、公共 `PageRequest`、`GetCustomerRequest` 的继承、客户分页 Service 的映射调用，以及本进度文件待提交；跟进分页业务查询尚未开始修改
+- 已核验提交：`a33c153 refactor: share pagination request and result mapping`
+- 远程状态：只读查询 GitHub 已确认远程 `lesson/customer-management` 与本地 HEAD 一致，均为 `a33c153`
+- 当前未提交改动：跟进仓储接口及实现、Service 接口及实现、分页 HTTP 接口和本进度文件待提交；成功分页与四个边界场景已验收，旧全列表查询已删除
 
 ## 已完成并理解
 
@@ -30,6 +30,9 @@
 - 实现 `PagedResult<T>.Map<TResult>(Func<T, TResult>)`：逐项调用转换委托，返回新的分页结果并保留总数、页码和每页大小；已接入现有客户分页查询。
 - 明确客户查询原本已在数据库中执行 `Skip/Take`，再转换当前页 DTO；新增 `Map` 用于统一结果转换，不能据此认定查询更快或更省内存。
 - 提取公共 `PageRequest`，集中定义页码、每页大小的默认值与 `[Range]` 校验；`GetCustomerRequest` 通过继承复用分页属性，仅保留客户查询的关键词。
+- 实现跟进仓储 `CountAsync` 和 `GetPageAsync`，共用按客户 ID 筛选的 `BuildQuery`；计数使用 EF Core 异步查询，分页先按创建时间、ID 倒序，再执行 `Skip/Take`。
+- 跟进 Service 和 GET 接口已接入公共 `PageRequest`、计数及分页仓储方法、`PagedResult<T>.Map`；成功响应由数组改为包含 `items` 和分页信息的对象。
+- 完成跟进分页的正常页、越界页、客户无记录、客户不存在和页码无效验收；删除跟进仓储已无调用的旧全列表查询声明与实现。
 
 ## 已执行验证
 
@@ -48,6 +51,12 @@
 - 修正跟进列表返回类型后重新构建：0 警告、0 错误；列表检查点已提交并推送至 `759fb16`，工作区在本次文档同步前干净。
 - 2026-10-14 检查 `Map` 循环、分页字段保留和 Service 调用正确；应用层项目构建通过，0 警告、0 错误。
 - 公共分页请求接入后，API 项目重新构建通过，0 警告、0 错误；学习者确认客户分页请求 `pageNumber=2&pageSize=1` 和非法页码 `pageNumber=0` 的测试通过，请求日志对应 `200 / 400`。已检查代码按继承属性计算分页并保留结果中的分页字段。
+- 公共分页输入和结果转换检查点已提交并推送至 `a33c153`；已只读核验 GitHub 分支，工作区在本次进度同步前干净。
+- 跟进仓储计数和分页实现经代码检查，API 项目构建通过，0 警告、0 错误。
+- 跟进分页成功场景：客户 1、第 2 页、每页 2 条返回 `200`，记录 ID 为 4、3，`totalCount=6`、`pageNumber=2`、`pageSize=2`，截图与查询逻辑一致。
+- 三层分页返回类型已统一；使用 `dotnet build .\backend\XCRM.Api\XCRM.Api.csproj --no-restore -p:OutputPath=bin/verification/` 避开调试程序占用输出文件，构建通过，0 警告、0 错误。
+- 跟进分页边界验收：客户 1 第 4 页每页 2 条返回 `200`、`items=[]`、`totalCount=6`；客户 2 第 1 页返回 `200`、空数组、总数 0；客户 3 返回 `404`；客户 1 页码 0 返回 `400`，错误明确指向 `PageNumber`。四张截图与当天请求日志的 `200 / 200 / 404 / 400` 一致。
+- 删除旧全列表查询后再次用独立输出目录构建通过，0 警告、0 错误；最终 diff 检查通过，改动限于本次分页功能及学习进度。
 
 ## 已确认错误与原因
 
@@ -62,10 +71,13 @@
 - 跟进列表 Controller 曾声明 `CustomerContactDto`，但实际返回跟进 DTO；`Ok(object)` 允许编译和运行，接口响应模型仍声明错误。已改为 `CustomerFollowUpDto`，并把固定资源路径统一为小写 `follow-ups`。
 - `Map` 初次实现曾写成 `result = item.t`；`T` 是类型参数，转换动作来自传入的委托。已改为 `result.Add(convert(item))`，并返回保留分页字段的新结果。
 - Scalar 中填写分页值后未启用参数开关，响应仍使用默认页码和每页大小；已核对 `[FromQuery]` 和 `Map` 的参数传递正确，学习者确认理解需要启用参数再发送。
+- 跟进计数初次实现虽标记 `async`，但调用同步 `Count()`，且未传递取消令牌；已改为 `await CountAsync(cancellationToken)`。分页初次实现缺少排序，已在 `Skip/Take` 前加入创建时间和 ID 倒序。
+- 跟进分页接入时只增加了请求参数，接口、Service 和 Controller 的返回声明仍为列表；`Map` 返回完整分页对象，导致无法隐式转换。已统一为 `PagedResult<CustomerFollowUpDto>` 对应的返回类型。
+- 核验构建曾因运行中的 API 占用输出 DLL 而复制失败；使用独立的 `bin/verification/` 输出目录完成核验，未修改业务代码或中断调试。
 
 ## 下一学习步骤
 
-- 实现跟进记录仓储的分页查询和总数统计，使用共享基础查询统一按客户 ID 筛选，保证计数与分页结果使用相同条件。
+- 实现单条客户跟进记录的详情查询，通过客户 ID 和跟进记录 ID 联合限定访问，并复用现有 DTO 映射。
 
 ## 本机配置
 

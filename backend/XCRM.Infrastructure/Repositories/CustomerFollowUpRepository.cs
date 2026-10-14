@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using XCRM.Application.Common.Pagination;
 using XCRM.Domain.Entities;
 using XCRM.Domain.Repositories;
 using XCRM.Infrastructure.Data;
@@ -27,13 +28,28 @@ namespace XCRM.Infrastructure.Repositories
             return await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IReadOnlyList<CustomerFollowUp>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default)
+        private IQueryable<CustomerFollowUp> BuildQuery(long customerId)
         {
-            return await _context.CustomerFollowUps.AsNoTracking()
-                .Where(n => n.CustomerId == customerId)
+            return _context.CustomerFollowUps.AsNoTracking().Where(n => n.CustomerId == customerId);
+        }
+
+        public async Task<int> CountAsync(long customerId, CancellationToken cancellationToken)
+        {
+            return await BuildQuery(customerId).CountAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<CustomerFollowUp>> GetPageAsync(long customerId, int skip, int take, CancellationToken cancellationToken)
+        {
+            var query = BuildQuery(customerId);
+
+            var result = await query
                 .OrderByDescending(n => n.CreateTime)
                 .ThenByDescending(n => n.Id)
+                .Skip(skip)
+                .Take(take)
                 .ToListAsync(cancellationToken);
+
+            return result;
         }
     }
 }

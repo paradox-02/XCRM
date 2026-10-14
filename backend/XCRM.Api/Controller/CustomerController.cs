@@ -139,9 +139,9 @@ namespace XCRM.Api.Controller
         }
 
         [HttpGet("{customerId:long}/follow-ups")]
-        public async Task<ActionResult<IReadOnlyList<CustomerFollowUpDto>>> GetFollowUps(long customerId, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedResult<CustomerFollowUpDto>>> GetFollowUps(long customerId, [FromQuery] PageRequest request, CancellationToken cancellationToken)
         {
-            var followUps = await _customerService.GetFollowUpAsync(customerId, cancellationToken);
+            var followUps = await _customerService.GetFollowUpAsync(customerId, request, cancellationToken);
 
             return followUps switch
             {
