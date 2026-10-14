@@ -73,10 +73,16 @@ namespace XCRM.Application.Customers
 
             var customers = await _customerRepository.GetPageAsync(keyword, skip, request.PageSize, cancellationToken);
 
-            var items = customers.Select(ToDto).ToList();
+            // 旧方法
+            //var items = customers.Select(ToDto).ToList();
 
-            return new PagedResult<CustomerDto>(
-                items, totalCount, request.PageNumber, request.PageSize);
+            //return new PagedResult<CustomerDto>(
+            //    items, totalCount, request.PageNumber, request.PageSize);
+
+            // 新方法
+            var page = new PagedResult<Customer>(customers, totalCount, request.PageNumber, request.PageSize);
+
+            return page.Map(ToDto);
         }
 
         public async Task<CustomerDto?> UpdateDetailsAsync(long id, UpdateCustomerRequest request, CancellationToken cancellationToken)
