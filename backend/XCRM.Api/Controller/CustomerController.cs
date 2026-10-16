@@ -135,7 +135,9 @@ namespace XCRM.Api.Controller
                 return NotFound();
             }
 
-            return StatusCode(StatusCodes.Status201Created, result);
+            //return StatusCode(StatusCodes.Status201Created, result);
+
+            return CreatedAtAction(nameof(GetFollowUpById), new { customerId, followUpId = result.id }, result);
         }
 
         [HttpGet("{customerId:long}/follow-ups")]
