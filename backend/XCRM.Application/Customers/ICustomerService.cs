@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using XCRM.Application.Customers.DTOs;
 using XCRM.Application.Common.Pagination;
+using XCRM.Domain.Repositories;
 
 namespace XCRM.Application.Customers
 {
@@ -18,7 +19,7 @@ namespace XCRM.Application.Customers
         Task<CustomerContactDto?> UpdateContactAsync(long customerId, long contactId, UpdateCustomerContactRequest request, CancellationToken cancellationToken);
         Task<CustomerContactDto?> UpdateContactStatusAsync(long customerId, long contactId, UpdateCustomerStatusRequest request, CancellationToken cancellationToken);
         Task<CustomerFollowUpDto?> CreateCustomerFollowUpAsync(long customerId, CreateCustomerFollowUpRequest request, CancellationToken cancellationToken);
-        Task<PagedResult<CustomerFollowUpDto>?> GetFollowUpAsync(long customerId, PageRequest request, CancellationToken cancellationToken);
+        Task<PagedResult<CustomerFollowUpDto>?> GetFollowUpAsync(long customerId, GetCustomerFollowUpsReqest request, CancellationToken cancellationToken);
         Task<CustomerFollowUpDto?> GetFollowUpByIdAsync(long customerId, long followUpId, CancellationToken cancellationToken);
     }
 }

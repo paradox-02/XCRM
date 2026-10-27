@@ -28,19 +28,37 @@ namespace XCRM.Infrastructure.Repositories
             return await _context.SaveChangesAsync(cancellationToken);
         }
 
-        private IQueryable<CustomerFollowUp> BuildQuery(long customerId)
+        private IQueryable<CustomerFollowUp> BuildQuery(long customerId, CustomerFollowUpFilter? filter = null)
         {
-            return _context.CustomerFollowUps.AsNoTracking().Where(n => n.CustomerId == customerId);
+            var query = _context.CustomerFollowUps.AsNoTracking().Where(n => n.CustomerId == customerId);
+
+            if (filter is null)
+            {
+                return query;
+            }
+
+            if (filter.Keyword is { } keyword)
+            {
+                query = query.Where(n => n.Content.Contains(keyword));
+            }
+
+            if (filter.FromTimeUtc is { } from)
+            {
+                query = query.Where(n => n.CreateTime >= from);
+            }
+
+
+            return query;
         }
 
-        public async Task<int> CountAsync(long customerId, CancellationToken cancellationToken)
+        public async Task<int> CountAsync(long customerId, CustomerFollowUpFilter filter, CancellationToken cancellationToken)
         {
-            return await BuildQuery(customerId).CountAsync(cancellationToken);
+            return await BuildQuery(customerId, filter).CountAsync(cancellationToken);
         }
 
-        public async Task<IReadOnlyList<CustomerFollowUp>> GetPageAsync(long customerId, int skip, int take, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<CustomerFollowUp>> GetPageAsync(long customerId, CustomerFollowUpFilter filter, int skip, int take, CancellationToken cancellationToken)
         {
-            var query = BuildQuery(customerId);
+            var query = BuildQuery(customerId, filter);
 
             var result = await query
                 .OrderByDescending(n => n.CreateTime)

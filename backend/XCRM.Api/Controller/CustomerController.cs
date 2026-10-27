@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XCRM.Application.Common.Pagination;
 using XCRM.Application.Customers;
 using XCRM.Application.Customers.DTOs;
+using XCRM.Domain.Repositories;
 
 namespace XCRM.Api.Controller
 {
@@ -141,7 +142,7 @@ namespace XCRM.Api.Controller
         }
 
         [HttpGet("{customerId:long}/follow-ups")]
-        public async Task<ActionResult<PagedResult<CustomerFollowUpDto>>> GetFollowUps(long customerId, [FromQuery] PageRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedResult<CustomerFollowUpDto>>> GetFollowUps(long customerId, [FromQuery] GetCustomerFollowUpsReqest request, CancellationToken cancellationToken)
         {
             var followUps = await _customerService.GetFollowUpAsync(customerId, request, cancellationToken);
 

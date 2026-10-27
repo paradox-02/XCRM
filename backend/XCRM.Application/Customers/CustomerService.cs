@@ -273,7 +273,7 @@ namespace XCRM.Application.Customers
             );
         }
 
-        public async Task<PagedResult<CustomerFollowUpDto>?> GetFollowUpAsync(long customerId, PageRequest request, CancellationToken cancellationToken)
+        public async Task<PagedResult<CustomerFollowUpDto>?> GetFollowUpAsync(long customerId, GetCustomerFollowUpsReqest request, CancellationToken cancellationToken)
         {
             var customer = await _customerRepository.GetByIdAsync(customerId, cancellationToken);
 
@@ -284,9 +284,13 @@ namespace XCRM.Application.Customers
 
             var skip = (request.PageNumber - 1) * request.PageSize;
 
-            var totalCount = await _customerFollowUpRepository.CountAsync(customerId, cancellationToken);
+            var keyword = string.IsNullOrWhiteSpace(request.Keyword) ? null : request.Keyword.Trim();
 
-            var followUps = await _customerFollowUpRepository.GetPageAsync(customerId, skip, request.PageSize, cancellationToken);
+            var filter = new CustomerFollowUpFilter(keyword, request.FromTime?.UtcDateTime, request.ToTime?.UtcDateTime);
+
+            var totalCount = await _customerFollowUpRepository.CountAsync(customerId, filter, cancellationToken);
+
+            var followUps = await _customerFollowUpRepository.GetPageAsync(customerId, filter, skip, request.PageSize, cancellationToken);
 
             var page = new PagedResult<CustomerFollowUp>(followUps, totalCount, request.PageNumber, request.PageSize);
 

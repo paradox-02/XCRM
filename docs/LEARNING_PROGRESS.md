@@ -4,9 +4,9 @@
 
 - 日期：2026-10-16
 - 当前课程分支：`lesson/customer-management`
-- 已核验提交：`e06701f feat: get customer follow-up details`
-- 远程状态：只读查询 GitHub 已确认远程 `lesson/customer-management` 与本地 HEAD 一致，均为 `e06701f`
-- 当前未提交改动：新增跟进接口已接入 `CreatedAtAction`，以及学习进度同步；代码检查、构建和新增后按 Location 读取详情的验收通过，待提交和推送
+- 已核验提交：`95be4e2 feat: return follow-up location after creation`
+- 远程状态：只读查询 GitHub 已确认远程 `lesson/customer-management` 与本地 HEAD 一致，均为 `95be4e2`
+- 当前未提交改动：跟进列表筛选请求 DTO、Controller 与 Service 的请求类型调整，以及学习进度文件；输入校验已核验，仓储尚未使用关键词和时间条件
 
 ## 已完成并理解
 
@@ -36,6 +36,7 @@
 - 完成单条跟进详情的仓储和 Service：复用 `BuildQuery(customerId)` 后按跟进 ID 查询，查不到返回 `null`，查到复用 `ToFollowUpDto`，不额外查询客户或改写电话快照。
 - 完成单条跟进详情 GET 接口：Controller 使用 `switch` 表达式将 DTO 映射为 `200`、将 `null` 映射为 `404`；按客户 ID 限定记录归属，成功与失败场景均已验收。
 - 新增跟进接口使用 `CreatedAtAction` 返回 `201`、DTO 和新记录的 `Location`；使用 `nameof` 指定详情 Action，以匿名对象传递客户 ID 和跟进 ID，已验证创建后能够按该地址读取相同记录。
+- 跟进筛选请求继承 `PageRequest`，增加关键词和可空 `DateTimeOffset` 起止时间；实现 `IValidatableObject`，用空属性模式取出非空值，并用 `yield return` 提供 `ValidationResult`。开始时间大于或等于结束时间时返回验证错误。
 
 ## 已执行验证
 
@@ -66,6 +67,9 @@
 - 详情 HTTP 修正后验收：客户 2 的跟进 1 返回 `404`，客户 1 的跟进 7 返回 `404`，客户 1 的跟进 1 返回 `200` 且 DTO 的 `id=1`、`customerId=1`。三张截图与当天请求日志一致；已检查两个 ID 联合筛选和 Controller 空值分支，API 独立输出目录构建通过，0 警告、0 错误，最终 diff 检查通过。
 - 详情查询检查点已提交并推送至 `e06701f`；已只读核验 GitHub 学习分支与本地 HEAD 一致，提交范围与验收代码一致，核验时工作区干净。
 - 2026-10-16 核验新增跟进响应：`CreatedAtAction` 指向详情 Action，路由值包含客户 ID 和新记录 ID；API 独立输出目录构建通过，0 警告、0 错误。POST 返回 `201`，响应体 `id=7`、`customerId=1`，Location 路径为 `/api/customers/1/follow-ups/7`；随后详情 GET 返回 `200`，ID、客户 ID、电话快照和内容与新增响应一致。截图与当天请求日志的 `201 / 200` 一致，最终 diff 检查通过。
+- `CreatedAtAction` 检查点已提交并推送至 `95be4e2`；只读核验 GitHub 学习分支与本地 HEAD 一致，核验时工作区干净。
+- 跟进筛选输入验收：截图确认未填时间和正常范围返回 `200`，时间反转返回带自定义提示的 `400`；将比较修正为 `>=` 后，学习者确认相同时间返回 `400`，代码检查及最新请求日志一致。筛选输入已接入 Controller 和 Service，数据库查询仍只按客户 ID 筛选。
+- 筛选输入修正后 API 独立输出目录构建通过，0 个错误、4 条 NuGet 安全警告；警告来自 API 和 Infrastructure 使用的 `System.Security.Cryptography.Pkcs` 9.0.4（NU1902、NU1903），依赖来源和更新方案需单独核验，本轮未更改依赖。
 
 ## 已确认错误与原因
 
@@ -84,10 +88,11 @@
 - 跟进分页接入时只增加了请求参数，接口、Service 和 Controller 的返回声明仍为列表；`Map` 返回完整分页对象，导致无法隐式转换。已统一为 `PagedResult<CustomerFollowUpDto>` 对应的返回类型。
 - 核验构建曾因运行中的 API 占用输出 DLL 而复制失败；使用独立的 `bin/verification/` 输出目录完成核验，未修改业务代码或中断调试。
 - 详情 Controller 曾直接执行 `Ok(followUp)`，未处理 Service 返回的 `null`；ASP.NET Core 默认将空对象响应处理为 `204`。已在 Controller 显式将 `null` 映射为 `NotFound()`，复测两个失败场景均返回 `404`，仓储和 Service 的查询逻辑保持不变。
+- 时间校验初次仅判断两项有值，会误拒绝正常范围；增加比较时曾使用 `>`，相等时条件为 false，仍返回 `200`。已改为 `from >= to`，与“开始时间必须早于结束时间”的规则一致。
 
 ## 下一学习步骤
 
-- 为跟进分页列表增加关键词和时间范围筛选，复用相同查询条件完成计数与分页。
+- 将跟进筛选输入标准化并转换为 UTC，接入仓储的共享查询条件，使关键词、时间范围的计数与分页保持一致。
 
 ## 本机配置
 
